@@ -22,6 +22,17 @@ permissions:
   contents: read
 
 jobs:
+  # A few seconds on a Linux runner. If this starts and the Mac job does not,
+  # the trouble is with GitHub's Mac runners and not with the account.
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - run: echo "A hosted runner started for this repository."
+
   build:
     # macos-26 runners were assigned and then dropped the job twice; macos-15
     # carries the newer Xcode versions as well.
