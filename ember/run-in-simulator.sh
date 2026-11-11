@@ -31,7 +31,7 @@ export WORK="$PWD/.deps-build-sim"
 export OUT="$PWD/cross-iossim.txt"
 
 echo "==> Build tools"
-brew install --quiet meson ninja pkg-config autoconf automake libtool m4 qemu
+brew install --quiet meson ninja pkg-config cmake autoconf automake libtool m4 qemu
 export PATH="$(brew --prefix m4)/bin:$PATH"
 
 if [ ! -d "$PREFIX/lib" ]; then

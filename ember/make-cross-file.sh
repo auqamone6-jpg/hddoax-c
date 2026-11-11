@@ -46,6 +46,9 @@ ar         = '$BIN/ar'
 strip      = '$BIN/strip'
 ranlib     = '$BIN/ranlib'
 pkg-config = 'pkg-config'
+# The emulator builds libyuv as a CMake subproject, and in a cross build meson
+# only uses a CMake that is named here.
+cmake      = 'cmake'
 
 [built-in options]
 c_args        = [$FLAGS, '-I$PREFIX/include']

@@ -21,7 +21,7 @@ command -v brew >/dev/null || { echo "Homebrew is required: https://brew.sh" >&2
 xcrun --sdk iphoneos --show-sdk-path >/dev/null || { echo "Xcode with the iOS SDK is required." >&2; exit 1; }
 
 echo "==> Build tools"
-brew install --quiet meson ninja pkg-config autoconf automake libtool m4 qemu ldid
+brew install --quiet meson ninja pkg-config cmake autoconf automake libtool m4 qemu ldid
 export PATH="$(brew --prefix m4)/bin:$PATH"
 
 if [ ! -d "$PREFIX/lib" ]; then
