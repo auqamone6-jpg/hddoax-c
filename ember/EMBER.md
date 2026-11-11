@@ -45,6 +45,22 @@ The result is `Inferno.ipa` in this folder (the file keeps the original name;
 the app installs as Ember). The project does not install the app on a phone
 or run it; that is still done with a sideloading tool.
 
+## Trying it in the iOS Simulator (experimental)
+
+On an Apple Silicon Mac:
+
+    ./run-in-simulator.sh
+
+or choose the **Ember (Simulator)** scheme in `Ember.xcodeproj` and press
+Build. It builds the emulator and the app for the Simulator, installs the app
+in the booted Simulator (it boots an iPhone 17 Pro if none is running), opens
+it, and prints the folder the disk goes in.
+
+The emulator's authors never built it for the Simulator, and this has not been
+run. It may stop while building the emulator, or when the machine starts. The
+Simulator also says little about a real phone: JIT, the memory limit and speed
+all behave differently there.
+
 ## Using
 
 1. Install the `.ipa` and StikDebug with a sideloading tool.

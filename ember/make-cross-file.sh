@@ -17,13 +17,20 @@ PREFIX="${PREFIX:-$HERE/prefix}"
 OUT="${OUT:-$HERE/cross-ios-arm64.txt}"
 DEPLOY="${DEPLOY:-16.0}"
 
-SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
-BIN="$(dirname "$(xcrun --sdk iphoneos --find ar)")"
+# IOS_SDK=iphonesimulator writes the Simulator's file; give it an OUT of its own.
+SDKNAME="${IOS_SDK:-iphoneos}"
+if [ "$SDKNAME" = iphonesimulator ]; then
+    MINFLAG="-mios-simulator-version-min=$DEPLOY"
+else
+    MINFLAG="-mios-version-min=$DEPLOY"
+fi
+SDK="$(xcrun --sdk "$SDKNAME" --show-sdk-path)"
+BIN="$(dirname "$(xcrun --sdk "$SDKNAME" --find ar)")"
 
 [ -d "$SDK" ] || { echo "Не нашёл SDK для iPhoneOS: $SDK" >&2; exit 1; }
 [ -d "$PREFIX" ] || echo "Внимание: $PREFIX ещё нет — соберите туда зависимости." >&2
 
-FLAGS="'-arch', 'arm64', '-isysroot', '$SDK', '-mios-version-min=$DEPLOY'"
+FLAGS="'-arch', 'arm64', '-isysroot', '$SDK', '$MINFLAG'"
 
 cat > "$OUT" <<EOF
 # Meson cross-file: arm64 iOS (device). Deployment target $DEPLOY.

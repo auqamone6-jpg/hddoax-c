@@ -21,15 +21,23 @@ WORK="${WORK:-$HERE/.deps-build}"
 DEPLOY="${DEPLOY:-16.0}"
 JOBS="${JOBS:-$(sysctl -n hw.ncpu)}"
 
-SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
-FLAGS="-arch arm64 -isysroot $SDK -mios-version-min=$DEPLOY"
+# IOS_SDK=iphonesimulator builds the same set for the Simulator on an Apple
+# Silicon Mac; give it a PREFIX and WORK of its own.
+SDKNAME="${IOS_SDK:-iphoneos}"
+if [ "$SDKNAME" = iphonesimulator ]; then
+    MINFLAG="-mios-simulator-version-min=$DEPLOY"
+else
+    MINFLAG="-mios-version-min=$DEPLOY"
+fi
+SDK="$(xcrun --sdk "$SDKNAME" --show-sdk-path)"
+FLAGS="-arch arm64 -isysroot $SDK $MINFLAG"
 
 export CC="clang $FLAGS"
 export CXX="clang++ $FLAGS"
 export CPP="clang -E $FLAGS"
-export AR="$(xcrun --sdk iphoneos --find ar)"
-export RANLIB="$(xcrun --sdk iphoneos --find ranlib)"
-export STRIP="$(xcrun --sdk iphoneos --find strip)"
+export AR="$(xcrun --sdk "$SDKNAME" --find ar)"
+export RANLIB="$(xcrun --sdk "$SDKNAME" --find ranlib)"
+export STRIP="$(xcrun --sdk "$SDKNAME" --find strip)"
 export CFLAGS="$FLAGS -O2 -I$PREFIX/include"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="$FLAGS -L$PREFIX/lib"
@@ -52,11 +60,11 @@ strip = '$STRIP'
 ranlib = '$RANLIB'
 pkg-config = 'pkg-config'
 [built-in options]
-c_args = ['-arch', 'arm64', '-isysroot', '$SDK', '-mios-version-min=$DEPLOY', '-I$PREFIX/include']
-c_link_args = ['-arch', 'arm64', '-isysroot', '$SDK', '-mios-version-min=$DEPLOY', '-L$PREFIX/lib', '-framework', 'CoreFoundation']
-cpp_args = ['-arch', 'arm64', '-isysroot', '$SDK', '-mios-version-min=$DEPLOY', '-I$PREFIX/include']
-cpp_link_args = ['-arch', 'arm64', '-isysroot', '$SDK', '-mios-version-min=$DEPLOY', '-L$PREFIX/lib', '-framework', 'CoreFoundation']
-objc_args = ['-arch', 'arm64', '-isysroot', '$SDK', '-mios-version-min=$DEPLOY']
+c_args = ['-arch', 'arm64', '-isysroot', '$SDK', '$MINFLAG', '-I$PREFIX/include']
+c_link_args = ['-arch', 'arm64', '-isysroot', '$SDK', '$MINFLAG', '-L$PREFIX/lib', '-framework', 'CoreFoundation']
+cpp_args = ['-arch', 'arm64', '-isysroot', '$SDK', '$MINFLAG', '-I$PREFIX/include']
+cpp_link_args = ['-arch', 'arm64', '-isysroot', '$SDK', '$MINFLAG', '-L$PREFIX/lib', '-framework', 'CoreFoundation']
+objc_args = ['-arch', 'arm64', '-isysroot', '$SDK', '$MINFLAG']
 prefix = '$PREFIX'
 [host_machine]
 system = 'darwin'

@@ -43,6 +43,7 @@
 			<key>targets</key>
 			<array>
 				<string>EB0000000000000000000003</string>
+				<string>EB000000000000000000000A</string>
 			</array>
 		</dict>
 		<key>EB0000000000000000000002</key>
@@ -57,6 +58,7 @@
 				<string>EB0000000000000000000069</string>
 				<string>EB000000000000000000006A</string>
 				<string>EB000000000000000000006B</string>
+				<string>EB0000000000000000000078</string>
 			</array>
 			<key>isa</key>
 			<string>PBXGroup</string>
@@ -156,6 +158,67 @@
 			<key>name</key>
 			<string>Release</string>
 		</dict>
+		<key>EB000000000000000000000A</key>
+		<dict>
+			<key>buildArgumentsString</key>
+			<string>run-in-simulator.sh $(ACTION)</string>
+			<key>buildConfigurationList</key>
+			<string>EB000000000000000000000B</string>
+			<key>buildPhases</key>
+			<array/>
+			<key>buildToolPath</key>
+			<string>/bin/bash</string>
+			<key>buildWorkingDirectory</key>
+			<string>$(SRCROOT)</string>
+			<key>dependencies</key>
+			<array/>
+			<key>isa</key>
+			<string>PBXLegacyTarget</string>
+			<key>name</key>
+			<string>Ember (Simulator)</string>
+			<key>passBuildSettingsInEnvironment</key>
+			<string>0</string>
+			<key>productName</key>
+			<string>Ember Simulator</string>
+		</dict>
+		<key>EB000000000000000000000B</key>
+		<dict>
+			<key>buildConfigurations</key>
+			<array>
+				<string>EB000000000000000000000C</string>
+				<string>EB000000000000000000000D</string>
+			</array>
+			<key>defaultConfigurationIsVisible</key>
+			<string>0</string>
+			<key>defaultConfigurationName</key>
+			<string>Release</string>
+			<key>isa</key>
+			<string>XCConfigurationList</string>
+		</dict>
+		<key>EB000000000000000000000C</key>
+		<dict>
+			<key>buildSettings</key>
+			<dict>
+				<key>PRODUCT_NAME</key>
+				<string>Ember Simulator</string>
+			</dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>name</key>
+			<string>Debug</string>
+		</dict>
+		<key>EB000000000000000000000D</key>
+		<dict>
+			<key>buildSettings</key>
+			<dict>
+				<key>PRODUCT_NAME</key>
+				<string>Ember Simulator</string>
+			</dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>name</key>
+			<string>Release</string>
+		</dict>
 		<key>EB0000000000000000000064</key>
 		<dict>
 			<key>isa</key>
@@ -241,6 +304,17 @@
 			<string>text</string>
 			<key>path</key>
 			<string>LICENSE</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>EB0000000000000000000078</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>text.script.sh</string>
+			<key>path</key>
+			<string>run-in-simulator.sh</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>

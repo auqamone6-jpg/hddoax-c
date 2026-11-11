@@ -169,6 +169,12 @@ enum JIT {
     private static let maySelfTrace = false
     #endif
 
+    #if targetEnvironment(simulator)
+    private static let isSimulator = true
+    #else
+    private static let isSimulator = false
+    #endif
+
     /// Re-runs the probe. Cheap, and safe to call repeatedly.
     ///
     /// It has to be repeatable: StikDebug attaches *after* the app is already
@@ -183,7 +189,14 @@ enum JIT {
         // is precisely the condition the translator needs. A plain RWX mapping
         // is NOT a substitute: mmap accepts it and the hardware still refuses
         // to execute the page, which looks like a hang rather than an error.
-        if canAllocateExecutable() {
+        if Self.isSimulator, canMirrorMap() {
+            // A Simulator process is a Mac process. The Mac hands out MAP_JIT
+            // freely, but then expects the write protection to be toggled
+            // around every write, which an iOS build of the translator does
+            // not do. The mirror mapping needs none of that.
+            needsSplitWX = true
+            status = .available(via: L("зеркальное отображение (split-wx)"))
+        } else if canAllocateExecutable() {
             // The entitlement route: the translator can keep one RWX buffer.
             needsSplitWX = false
             status = .available(via: isBeingDebugged() ? L("MAP_JIT, отладчик") : "MAP_JIT")

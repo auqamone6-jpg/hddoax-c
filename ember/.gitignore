@@ -138,3 +138,10 @@ pixel
 .idea/
 .build-mac/
 Inferno-macOS.zip
+
+# The Simulator build keeps its own copies of everything.
+prefix-sim/
+.deps-build-sim/
+.build-sim/
+cross-iossim-arm64.txt
+tools/
