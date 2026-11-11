@@ -207,6 +207,14 @@ untar lzfse.tar.gz lzfse
 make -C lzfse -j"$JOBS" CC="$CC" INSTALL_PREFIX="$PREFIX"
 make -C lzfse install INSTALL_PREFIX="$PREFIX"
 
+# ── lz4 (the emulator's USB uplink requires it) ─────────────────────────
+fetch lz4.tar.gz \
+    "https://github.com/lz4/lz4/releases/download/v1.10.0/lz4-1.10.0.tar.gz" \
+    "https://github.com/lz4/lz4/archive/refs/tags/v1.10.0.tar.gz"
+untar lz4.tar.gz lz4
+make -C lz4/lib -j"$JOBS" liblz4.a CC="$CC" AR="$AR" CFLAGS="$CFLAGS"
+make -C lz4/lib install PREFIX="$PREFIX" BUILD_SHARED=no CC="$CC" AR="$AR" CFLAGS="$CFLAGS"
+
 echo
 echo "==> Done. Contents of $PREFIX/lib:"
 ls "$PREFIX/lib" | sed 's/^/    /'
