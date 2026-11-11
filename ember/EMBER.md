@@ -38,8 +38,12 @@ On a Mac with Xcode and Homebrew, from this folder:
 
     ./build-ipa-on-mac.sh
 
-The result is `app/Inferno.ipa` (the file keeps the original name; the app
-installs as Ember).
+Or open `Ember.xcodeproj` in Xcode and press Build: it runs the same script,
+and the log is in Xcode's report navigator.
+
+The result is `Inferno.ipa` in this folder (the file keeps the original name;
+the app installs as Ember). The project does not install the app on a phone
+or run it; that is still done with a sideloading tool.
 
 ## Using
 

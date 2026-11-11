@@ -9,6 +9,11 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+# Xcode calls this with its action. There is nothing of Xcode's to clean.
+[ "${1:-}" = "clean" ] && exit 0
+# Xcode starts scripts without Homebrew on the path.
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
 EMULATOR_REF="${EMULATOR_REF:-ios}"
 export PREFIX="${PREFIX:-$PWD/prefix}"
 
@@ -27,6 +32,14 @@ fi
 if [ ! -d inferno-src ]; then
     echo "==> Emulator source"
     git clone --depth 1 -b "$EMULATOR_REF" https://github.com/MakrSas/Inferno.git inferno-src
+fi
+
+# app/build.sh stops without ChefKiss's filesystem patcher beside the app.
+# The address is the one RESTORE.md gives.
+if [ ! -f tools/InfernoFSPatcher/src/main.cpp ]; then
+    echo "==> Filesystem patcher source"
+    mkdir -p tools
+    git clone --depth 1 https://git.chefkiss.dev/AppleHax/InfernoFSPatcher tools/InfernoFSPatcher
 fi
 
 echo "==> Meson cross-file"
@@ -52,4 +65,4 @@ echo "==> App"
 export INFERNO_KEYMAPS="${INFERNO_KEYMAPS:-$(brew --prefix)/share/qemu/keymaps}"
 (cd app && ./build.sh)
 
-echo "==> Done: $PWD/app/Inferno.ipa"
+echo "==> Done: $PWD/Inferno.ipa"
