@@ -1,0 +1,57 @@
+name: Build Ember.ipa
+
+# Builds the unsigned .ipa for Ember on a GitHub Mac, so no local Mac, Xcode
+# or Homebrew is needed. The .ipa is attached to the run as an artifact.
+#
+# No guest image, firmware or Apple key is involved here.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/gallant-brahmagupta-lxzjzh
+    paths:
+      - "ember/**"
+      - ".github/workflows/ember-ipa.yml"
+
+concurrency:
+  group: ember-ipa-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: ember
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Environment fingerprint (cache key)
+        id: env
+        run: echo "xcode=$(xcodebuild -version | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache dependencies (prefix)
+        uses: actions/cache@v4
+        with:
+          path: ember/prefix
+          key: ember-iosdeps-${{ runner.os }}-${{ steps.env.outputs.xcode }}-${{ hashFiles('ember/scripts/build-ios-deps.sh') }}
+
+      - name: Build Inferno.ipa
+        run: ./build-ipa-on-mac.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ember-ipa
+          path: ember/app/Inferno.ipa
+          if-no-files-found: error

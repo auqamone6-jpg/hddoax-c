@@ -65,4 +65,9 @@ echo "==> App"
 export INFERNO_KEYMAPS="${INFERNO_KEYMAPS:-$(brew --prefix)/share/qemu/keymaps}"
 (cd app && ./build.sh)
 
-echo "==> Done: $PWD/Inferno.ipa"
+# app/build.sh writes beside itself on a GitHub runner, and here otherwise.
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+    echo "==> Done: $PWD/app/Inferno.ipa"
+else
+    echo "==> Done: $PWD/Inferno.ipa"
+fi
