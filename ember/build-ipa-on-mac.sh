@@ -1,0 +1,55 @@
+#!/bin/bash
+# One command on a Mac: everything .github/workflows/build-ipa.yml does on a
+# runner, in the same order, ending with app/Inferno.ipa.
+#
+#   ./build-ipa-on-mac.sh
+#
+# Needs Xcode and Homebrew. The first run builds the nine iOS dependencies
+# (about twenty minutes); later runs reuse prefix/ and build/.
+set -euo pipefail
+cd "$(dirname "$0")"
+
+EMULATOR_REF="${EMULATOR_REF:-ios}"
+export PREFIX="${PREFIX:-$PWD/prefix}"
+
+command -v brew >/dev/null || { echo "Homebrew is required: https://brew.sh" >&2; exit 1; }
+xcrun --sdk iphoneos --show-sdk-path >/dev/null || { echo "Xcode with the iOS SDK is required." >&2; exit 1; }
+
+echo "==> Build tools"
+brew install --quiet meson ninja pkg-config autoconf automake libtool m4 qemu ldid
+export PATH="$(brew --prefix m4)/bin:$PATH"
+
+if [ ! -d "$PREFIX/lib" ]; then
+    echo "==> iOS dependencies (once)"
+    scripts/build-ios-deps.sh
+fi
+
+if [ ! -d inferno-src ]; then
+    echo "==> Emulator source"
+    git clone --depth 1 -b "$EMULATOR_REF" https://github.com/MakrSas/Inferno.git inferno-src
+fi
+
+echo "==> Meson cross-file"
+./make-cross-file.sh
+
+if [ ! -f build/inferno/build.ninja ]; then
+    echo "==> Configure the emulator"
+    meson setup build/inferno inferno-src \
+        --cross-file=cross-ios-arm64.txt \
+        -Dbuildtype=release -Dprefix="$PREFIX" \
+        -Dshared_lib=true -Db_staticpic=true -Dwerror=false \
+        -Dkvm=disabled -Dhvf=disabled -Dwhpx=disabled \
+        -Dcocoa=disabled -Dgtk=disabled -Dsdl=disabled -Dcurses=disabled \
+        -Dcoreaudio=disabled -Dcurl=disabled -Dlibssh=disabled -Dbzip2=disabled \
+        -Dvnc=enabled -Dvnc_jpeg=disabled -Dvnc_sasl=disabled \
+        -Dtools=disabled -Dcoroutine_backend=ucontext
+fi
+
+echo "==> Emulator library"
+ninja -C build/inferno libqemu-aarch64-softmmu.dylib
+
+echo "==> App"
+export INFERNO_KEYMAPS="${INFERNO_KEYMAPS:-$(brew --prefix)/share/qemu/keymaps}"
+(cd app && ./build.sh)
+
+echo "==> Done: $PWD/app/Inferno.ipa"

@@ -1,0 +1,49 @@
+# Ember
+
+An iPhone app that runs an emulated iPhone 11 with iOS 14, full screen.
+
+Ember is a modified copy of [Inferno for iPhone](https://github.com/MakrSas/Inferno-iOS)
+by MakrSas, which is a front end for [Inferno](https://github.com/ChefKissInc/Inferno),
+the emulator by Visual Ehrmanntraut and the Inferno team at ChefKiss. The emulator
+and everything that talks to it are theirs. Ember is unofficial and is not
+affiliated with or endorsed by either.
+
+Licence: GPL-3.0, the same as the app it is built from. See `LICENSE`. The
+original `README.md` is kept as it was and still describes how everything works.
+
+## What Ember changes
+
+- **Enable JIT button.** One tap hands this app to StikDebug with the right
+  script, then the app keeps checking until JIT is on.
+- **Start button on the first screen** once the disk is in place and JIT is on.
+- **Full screen as soon as the machine starts.** Settings has a switch for it.
+- **Smooth mode** in Settings → Translator: the fastest known-good settings in
+  one tap.
+- **Open the folder in Files** button on the setup screen.
+- **`build-ipa-on-mac.sh`**: one command on a Mac that builds the `.ipa`.
+- App name and bundle identifier.
+
+None of these changes has been compiled or run yet.
+
+## What you need
+
+- A guest image (the "disk") that you build once on a computer by ChefKiss's
+  guides, linked from `README.md`. No Apple firmware, image or key is included
+  here.
+- StikDebug, LocalDevVPN and a pairing file, for JIT.
+
+## Building
+
+On a Mac with Xcode and Homebrew, from this folder:
+
+    ./build-ipa-on-mac.sh
+
+The result is `app/Inferno.ipa` (the file keeps the original name; the app
+installs as Ember).
+
+## Using
+
+1. Install the `.ipa` and StikDebug with a sideloading tool.
+2. Open Ember once, then copy `InfernoData` and `AppleSEPROM-Cebu-B1` into its
+   folder: Files → On My iPhone → Ember, or drag them in through Finder.
+3. Tap **Enable JIT**, then **Start**.
