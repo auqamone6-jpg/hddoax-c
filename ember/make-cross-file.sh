@@ -63,6 +63,13 @@ objc_args     = [$FLAGS]
 objc_link_args = [$FLAGS, '-L$PREFIX/lib', '-framework', 'CoreFoundation', '-lucontext']
 prefix        = '$PREFIX'
 
+# Written into the toolchain file meson hands to CMake subprojects (libyuv).
+# Without this, libyuv's CMake finds the Mac's own Homebrew libjpeg, turns on
+# its JPEG code, and then cannot find jpeglib.h for an iPhone build. The app
+# draws from raw frames and does not need libyuv's JPEG decoder.
+[cmake]
+CMAKE_DISABLE_FIND_PACKAGE_JPEG = 'TRUE'
+
 [host_machine]
 system     = 'darwin'
 subsystem  = 'ios'
