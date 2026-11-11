@@ -42,6 +42,19 @@ if [ ! -f tools/InfernoFSPatcher/src/main.cpp ]; then
     git clone --depth 1 https://git.chefkiss.dev/AppleHax/InfernoFSPatcher tools/InfernoFSPatcher
 fi
 
+# The emulator's build names /opt/homebrew/include whenever the target is
+# arm64, which an iPhone always is. On an Intel Mac Homebrew is in /usr/local
+# and that folder is not there, so the build stops. An empty one is enough.
+if [ ! -d /opt/homebrew/include ]; then
+    if [ -n "${GITHUB_ACTIONS:-}" ]; then
+        sudo mkdir -p /opt/homebrew/include /opt/homebrew/lib
+    else
+        echo "This Mac has no /opt/homebrew/include, which the emulator's build expects." >&2
+        echo "Create it once with: sudo mkdir -p /opt/homebrew/include /opt/homebrew/lib" >&2
+        exit 1
+    fi
+fi
+
 echo "==> Meson cross-file"
 ./make-cross-file.sh
 

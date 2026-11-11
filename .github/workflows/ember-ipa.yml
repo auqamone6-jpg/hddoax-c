@@ -22,20 +22,6 @@ permissions:
   contents: read
 
 jobs:
-  # The bare test jobs started on a Mac within seconds and the build never has.
-  # This one has the build's shape (same actions, same timeout) and nothing to
-  # do, to tell whether that shape is what keeps a Mac from starting it.
-  shape:
-    runs-on: macos-latest
-    timeout-minutes: 90
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          path: ember/prefix-shape
-          key: ember-shape-${{ runner.os }}
-      - run: echo "A job with the build's shape started."
-
   build:
     # Two kinds of Mac at once: whichever is given a runner that comes online
     # does the build. Both started a test job; macos-15 and macos-26 asked for
