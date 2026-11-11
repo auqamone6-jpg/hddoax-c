@@ -19,18 +19,14 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  # write: to attach the .ipa to a pre-release, as well as to the run.
+  contents: write
 
 jobs:
   build:
-    # Two kinds of Mac at once: whichever is given a runner that comes online
-    # does the build. Both started a test job; macos-15 and macos-26 asked for
-    # by name did not.
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, macos-15-intel]
-    runs-on: ${{ matrix.os }}
+    # The Intel Mac is the one that has built the .ipa. macos-latest was
+    # queued in six runs and never given a runner.
+    runs-on: macos-15-intel
     timeout-minutes: 90
     defaults:
       run:
@@ -61,9 +57,24 @@ jobs:
       - name: Build Inferno.ipa
         run: ./build-ipa-on-mac.sh
 
+      # The artifact service failed five times in a row on the first good
+      # build. A pre-release is a second, separate way to the same file, and
+      # one that downloads without signing in.
       - name: Upload artifact
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
-          name: Ember-ipa-${{ matrix.os }}
+          name: Ember-ipa
           path: ember/app/Inferno.ipa
           if-no-files-found: error
+
+      - name: Attach to the ember-build pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/Inferno.ipa Ember.ipa
+          gh release delete ember-build --yes --cleanup-tag || true
+          gh release create ember-build Ember.ipa \
+            --target "$GITHUB_SHA" --prerelease \
+            --title "Ember test build" \
+            --notes "Unsigned test build of Ember from commit $GITHUB_SHA. Install with a sideloading tool. Needs a guest image you build yourself and JIT from StikDebug; no Apple firmware is included."
