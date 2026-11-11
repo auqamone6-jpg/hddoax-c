@@ -22,38 +22,10 @@ permissions:
   contents: read
 
 jobs:
-  # A few seconds on a Linux runner. If this starts and the Mac job does not,
-  # the trouble is with GitHub's Mac runners and not with the account.
-  probe:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    defaults:
-      run:
-        working-directory: .
-    steps:
-      - run: echo "A hosted runner started for this repository."
-
-  # The same few seconds on each kind of Mac runner, to see which of them
-  # actually start a job right now.
-  macprobe:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-14, macos-15, macos-26, macos-latest, macos-15-intel]
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 5
-    defaults:
-      run:
-        working-directory: .
-    steps:
-      - run: |
-          echo "Started on ${{ matrix.os }}: $(uname -m)"
-          ls -d /Applications/Xcode*.app
-
   build:
-    # macos-26 runners were assigned and then dropped the job twice; macos-15
-    # carries the newer Xcode versions as well.
-    runs-on: macos-15
+    # Asked for by name, macos-26 and macos-15 runners were assigned and then
+    # dropped the job. macos-latest starts, and is the macos-26 arm64 image.
+    runs-on: macos-latest
     timeout-minutes: 90
     defaults:
       run:
