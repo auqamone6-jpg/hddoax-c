@@ -47,7 +47,7 @@ or run it; that is still done with a sideloading tool.
 
 ## Trying it in the iOS Simulator (experimental)
 
-On an Apple Silicon Mac:
+On a Mac, Apple Silicon or Intel:
 
     ./run-in-simulator.sh
 

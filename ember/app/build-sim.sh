@@ -1,5 +1,5 @@
 #!/bin/bash
-# Builds the app for the iOS Simulator on an Apple Silicon Mac, into
+# Builds the app for the iOS Simulator, for this Mac's own processor, into
 # app/.build-sim/Ember.app. The same sources as build.sh, compiled for the
 # Simulator, with the Simulator build of the emulator library.
 #
@@ -12,7 +12,7 @@ ROOT="$(cd "$(dirname "$0")" && pwd)"
 BUILD="$ROOT/.build-sim"
 APP="$BUILD/Ember.app"
 SDK="$(xcrun --sdk iphonesimulator --show-sdk-path)"
-TARGET="arm64-apple-ios16.0-simulator"
+TARGET="${IOS_ARCH:-$(uname -m)}-apple-ios16.0-simulator"
 DYLIB="${INFERNO_SIM_DYLIB:-$ROOT/../build/inferno-sim/libqemu-aarch64-softmmu.dylib}"
 KEYMAPS="${INFERNO_KEYMAPS:-/opt/homebrew/share/qemu/keymaps}"
 

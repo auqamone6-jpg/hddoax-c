@@ -3,7 +3,7 @@
 #
 #   ./run-in-simulator.sh
 #
-# Apple Silicon Mac, Xcode, Homebrew. Everything for the Simulator is kept
+# A Mac with Xcode and Homebrew, Apple Silicon or Intel. Everything for the Simulator is kept
 # apart from the iPhone build: prefix-sim/, .deps-build-sim/, build/inferno-sim.
 #
 # Experimental. The emulator was never built for the Simulator by its authors.
@@ -13,7 +13,14 @@ cd "$(dirname "$0")"
 [ "${1:-}" = "clean" ] && exit 0
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
-[ "$(uname -m)" = arm64 ] || { echo "The Simulator build needs an Apple Silicon Mac." >&2; exit 1; }
+# The Simulator runs code for the Mac's own processor: arm64 on Apple
+# Silicon, x86_64 on an Intel (or AMD) Mac.
+case "$(uname -m)" in
+    arm64)  export IOS_ARCH=arm64 ;;
+    x86_64) export IOS_ARCH=x86_64 ;;
+    *) echo "Unknown processor: $(uname -m)" >&2; exit 1 ;;
+esac
+echo "==> Building for the $IOS_ARCH Simulator"
 command -v brew >/dev/null || { echo "Homebrew is required: https://brew.sh" >&2; exit 1; }
 xcrun --sdk iphonesimulator --show-sdk-path >/dev/null || { echo "Xcode with the iOS Simulator SDK is required." >&2; exit 1; }
 
@@ -21,7 +28,7 @@ EMULATOR_REF="${EMULATOR_REF:-ios}"
 export IOS_SDK=iphonesimulator
 export PREFIX="$PWD/prefix-sim"
 export WORK="$PWD/.deps-build-sim"
-export OUT="$PWD/cross-iossim-arm64.txt"
+export OUT="$PWD/cross-iossim.txt"
 
 echo "==> Build tools"
 brew install --quiet meson ninja pkg-config autoconf automake libtool m4 qemu

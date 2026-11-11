@@ -143,5 +143,5 @@ Inferno-macOS.zip
 prefix-sim/
 .deps-build-sim/
 .build-sim/
-cross-iossim-arm64.txt
+cross-iossim.txt
 tools/

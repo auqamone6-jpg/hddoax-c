@@ -24,13 +24,16 @@ JOBS="${JOBS:-$(sysctl -n hw.ncpu)}"
 # IOS_SDK=iphonesimulator builds the same set for the Simulator on an Apple
 # Silicon Mac; give it a PREFIX and WORK of its own.
 SDKNAME="${IOS_SDK:-iphoneos}"
+# IOS_ARCH=x86_64 is for the Simulator on an Intel Mac. A phone is always arm64.
+ARCH="${IOS_ARCH:-arm64}"
+if [ "$ARCH" = x86_64 ]; then CPU=x86_64; else CPU=aarch64; fi
 if [ "$SDKNAME" = iphonesimulator ]; then
     MINFLAG="-mios-simulator-version-min=$DEPLOY"
 else
     MINFLAG="-mios-version-min=$DEPLOY"
 fi
 SDK="$(xcrun --sdk "$SDKNAME" --show-sdk-path)"
-FLAGS="-arch arm64 -isysroot $SDK $MINFLAG"
+FLAGS="-arch $ARCH -isysroot $SDK $MINFLAG"
 
 export CC="clang $FLAGS"
 export CXX="clang++ $FLAGS"
@@ -44,7 +47,7 @@ export LDFLAGS="$FLAGS -L$PREFIX/lib"
 export CPPFLAGS="-I$PREFIX/include"
 export PKG_CONFIG_LIBDIR="$PREFIX/lib/pkgconfig"
 export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
-HOST=aarch64-apple-darwin
+HOST=$CPU-apple-darwin
 
 mkdir -p "$PREFIX" "$WORK"
 cd "$WORK"
@@ -60,18 +63,18 @@ strip = '$STRIP'
 ranlib = '$RANLIB'
 pkg-config = 'pkg-config'
 [built-in options]
-c_args = ['-arch', 'arm64', '-isysroot', '$SDK', '$MINFLAG', '-I$PREFIX/include']
-c_link_args = ['-arch', 'arm64', '-isysroot', '$SDK', '$MINFLAG', '-L$PREFIX/lib', '-framework', 'CoreFoundation']
-cpp_args = ['-arch', 'arm64', '-isysroot', '$SDK', '$MINFLAG', '-I$PREFIX/include']
-cpp_link_args = ['-arch', 'arm64', '-isysroot', '$SDK', '$MINFLAG', '-L$PREFIX/lib', '-framework', 'CoreFoundation']
-objc_args = ['-arch', 'arm64', '-isysroot', '$SDK', '$MINFLAG']
+c_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '$MINFLAG', '-I$PREFIX/include']
+c_link_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '$MINFLAG', '-L$PREFIX/lib', '-framework', 'CoreFoundation']
+cpp_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '$MINFLAG', '-I$PREFIX/include']
+cpp_link_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '$MINFLAG', '-L$PREFIX/lib', '-framework', 'CoreFoundation']
+objc_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '$MINFLAG']
 prefix = '$PREFIX'
 [host_machine]
 system = 'darwin'
 subsystem = 'ios'
 kernel = 'xnu'
-cpu_family = 'aarch64'
-cpu = 'aarch64'
+cpu_family = '$CPU'
+cpu = '$CPU'
 endian = 'little'
 [properties]
 needs_exe_wrapper = true

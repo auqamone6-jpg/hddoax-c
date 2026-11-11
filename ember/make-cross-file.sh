@@ -19,6 +19,9 @@ DEPLOY="${DEPLOY:-16.0}"
 
 # IOS_SDK=iphonesimulator writes the Simulator's file; give it an OUT of its own.
 SDKNAME="${IOS_SDK:-iphoneos}"
+# IOS_ARCH=x86_64 is for the Simulator on an Intel Mac. A phone is always arm64.
+ARCH="${IOS_ARCH:-arm64}"
+if [ "$ARCH" = x86_64 ]; then CPU=x86_64; else CPU=aarch64; fi
 if [ "$SDKNAME" = iphonesimulator ]; then
     MINFLAG="-mios-simulator-version-min=$DEPLOY"
 else
@@ -30,7 +33,7 @@ BIN="$(dirname "$(xcrun --sdk "$SDKNAME" --find ar)")"
 [ -d "$SDK" ] || { echo "Не нашёл SDK для iPhoneOS: $SDK" >&2; exit 1; }
 [ -d "$PREFIX" ] || echo "Внимание: $PREFIX ещё нет — соберите туда зависимости." >&2
 
-FLAGS="'-arch', 'arm64', '-isysroot', '$SDK', '$MINFLAG'"
+FLAGS="'-arch', '$ARCH', '-isysroot', '$SDK', '$MINFLAG'"
 
 cat > "$OUT" <<EOF
 # Meson cross-file: arm64 iOS (device). Deployment target $DEPLOY.
@@ -61,8 +64,8 @@ prefix        = '$PREFIX'
 system     = 'darwin'
 subsystem  = 'ios'
 kernel     = 'xnu'
-cpu_family = 'aarch64'
-cpu        = 'aarch64'
+cpu_family = '$CPU'
+cpu        = '$CPU'
 endian     = 'little'
 
 [properties]

@@ -169,7 +169,9 @@ enum JIT {
     private static let maySelfTrace = false
     #endif
 
-    #if targetEnvironment(simulator)
+    // Only Apple Silicon has the write protection to toggle. On an Intel Mac
+    // the Simulator can keep one writable and executable buffer.
+    #if targetEnvironment(simulator) && arch(arm64)
     private static let isSimulator = true
     #else
     private static let isSimulator = false
